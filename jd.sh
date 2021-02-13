@@ -4,7 +4,6 @@
 ShellDir=${JD_DIR:-$(cd $(dirname $0); pwd)}
 [ ${JD_DIR} ] && HelpJd=jd || HelpJd=jd.sh
 ScriptsDir=${ShellDir}/scripts
-ScriptsDir2=${ShellDir}/scripts2
 ConfigDir=${ShellDir}/config
 FileConf=${ConfigDir}/config.sh
 FileConfSample=${ShellDir}/sample/config.sh.sample
@@ -186,7 +185,7 @@ function Run_Normal {
   
   FileNameTmp1=$(echo $1 | perl -pe "s|\.js||")
   FileNameTmp2=$(echo $1 | perl -pe "{s|jd_||; s|\.js||; s|^|jd_|}")
-  SeekDir="${ScriptsDir} ${ScriptsDir}/backUp ${ScriptsDir2} ${ConfigDir}"
+  SeekDir="${ScriptsDir} ${ScriptsDir}/backUp ${ConfigDir}"
   FileName=""
   WhichDir=""
 
@@ -212,7 +211,7 @@ function Run_Normal {
     cd ${WhichDir}
     node ${FileName}.js | tee ${LogFile}
   else
-    echo -e "\n在${ScriptsDir}、${ScriptsDir}/backUp、${ScriptsDir2}、${ConfigDir}四个目录下均未检测到 $1 脚本的存在，请确认...\n"
+    echo -e "\n在${ScriptsDir}、${ScriptsDir}/backUp、${ConfigDir}三个目录下均未检测到 $1 脚本的存在，请确认...\n"
     Help
   fi
 }
@@ -235,8 +234,6 @@ case $# in
   2)
     if [[ $2 == now ]]; then
       Run_Normal $1 $2
-    elif [[ $3 == now ]]; then
-      Run_Normal $1 $2 $3
     else
       echo -e "\n命令输入错误...\n"
       Help
