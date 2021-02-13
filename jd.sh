@@ -235,6 +235,8 @@ case $# in
   2)
     if [[ $2 == now ]]; then
       Run_Normal $1 $2
+    elif [[ $3 == now ]]; then
+      Run_Normal $1 $2 $3
     else
       echo -e "\n命令输入错误...\n"
       Help
