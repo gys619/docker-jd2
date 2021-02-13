@@ -212,7 +212,7 @@ function Run_Normal {
     cd ${WhichDir}
     node ${FileName}.js | tee ${LogFile}
   else
-    echo -e "\n在${ScriptsDir}、${ScriptsDir}/backUp、${ScriptsDir2}/commands、${ConfigDir}四个目录下均未检测到 $1 脚本的存在，请确认...\n"
+    echo -e "\n在${ScriptsDir}、${ScriptsDir}/backUp、${ScriptsDir2}、${ConfigDir}四个目录下均未检测到 $1 脚本的存在，请确认...\n"
     Help
   fi
 }
