@@ -87,19 +87,19 @@ function Git_PullScripts {
 }
 
 ## 克隆scripts2
-function Git_CloneScripts {
+function Git_CloneScripts2 {
   echo -e "克隆AutoSignMachine脚本，地址：${ShellURL}\n"
   git clone -b AutoSignMachine ${ShellURL} ${ScriptsDir2}
-  ExitStatusScripts=$?
+  ExitStatusScripts2=$?
   echo
 }
 
 ## 更新scripts2
-function Git_PullScripts {
+function Git_PullScripts2 {
   echo -e "更新AutoSignMachine脚本，地址：${ShellURL}\n"
   cd ${ScriptsDir2}
   git fetch --all
-  ExitStatusScripts=$?
+  ExitStatusScripts2=$?
   git reset --hard origin/AutoSignMachine
   echo
 }
@@ -250,9 +250,9 @@ function Npm_Install {
 }
 
 ## npm install scripts2
-function Npm_Install {
+function Npm_Install2 {
   cd ${ScriptsDir2}
-  if [[ "${PackageListOld}" != "$(cat package.json)" ]]; then
+  if [[ "${PackageListOld2}" != "$(cat package.json)" ]]; then
     echo -e "检测到package.json有变化，运行 npm install...\n"
     Npm_InstallSub
     if [ $? -ne 0 ]; then
@@ -394,13 +394,15 @@ fi
 if [ ${ExitStatusShell} -eq 0 ]; then
   echo -e "--------------------------------------------------------------\n"
   [ -f ${ScriptsDir}/package.json ] && PackageListOld=$(cat ${ScriptsDir}/package.json)
+  [ -f ${ScriptsDir2}/package.json ] && PackageListOld2=$(cat ${ScriptsDir2}/package.json)
   [ -d ${ScriptsDir}/.git ] && Git_PullScripts || Git_CloneScripts
+  [ -d ${ScriptsDir2}/.git ] && Git_PullScripts2 || Git_CloneScripts2
 fi
 
 ## 执行各函数
 if [[ ${ExitStatusScripts} -eq 0 ]]
 then
-  echo -e "js脚本更新完成...\n"
+  echo -e "LXK9301的js脚本更新完成...\n"
   Change_ALL
   [ -d ${ScriptsDir}/node_modules ] && Notify_Version
   Diff_Cron
@@ -410,7 +412,24 @@ then
   Del_Cron
   Add_Cron
 else
-  echo -e "js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
+  echo -e "LXK9301的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
+  Change_ALL
+fi
+
+## 执行各函数
+if [[ ${ExitStatusScripts2} -eq 0 ]]
+then
+  echo -e "AutoSignMachine的js脚本更新完成...\n"
+  Change_ALL
+  [ -d ${ScriptsDir}/node_modules ] && Notify_Version
+  Diff_Cron
+  Npm_Install
+  Output_ListJsAdd
+  Output_ListJsDrop
+  Del_Cron
+  Add_Cron
+else
+  echo -e "AutoSignMachine的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
   Change_ALL
 fi
 
