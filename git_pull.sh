@@ -11,6 +11,7 @@ ShellDir=${JD_DIR:-$(cd $(dirname $0); pwd)}
 LogDir=${ShellDir}/log
 [ ! -d ${LogDir} ] && mkdir -p ${LogDir}
 ScriptsDir=${ShellDir}/scripts
+ScriptsDir2=${ShellDir}/scripts2
 ConfigDir=${ShellDir}/config
 FileConf=${ConfigDir}/config.sh
 FileDiy=${ConfigDir}/diy.sh
@@ -26,17 +27,31 @@ ContentNewTask=${ShellDir}/new_task
 ContentDropTask=${ShellDir}/drop_task
 SendCount=${ShellDir}/send_count
 isTermux=${ANDROID_RUNTIME_ROOT}${ANDROID_ROOT}
-WhichDep=$(grep "/jd_docker2" "${ShellDir}/.git/config")
+ShellURL=https://github.com/kangwenhang/jd_docker2
+ScriptsURL=https://gitee.com/lxk0301/jd_scripts
 
-if [[ ${WhichDep} == *github* ]]; then
-  ScriptsURL=https://gitee.com/lxk0301/jd_scripts
-  ShellURL=https://github.com/kangwenhang/jd_docker2
-else
-  ScriptsURL=https://gitee.com/lxk0301/jd_scripts
-  ShellURL=https://github.com/kangwenhang/jd_docker2
-fi
+## 更新crontab，gitee服务器同一时间限制5个链接，因此每个人更新代码必须错开时间，每次执行git_pull随机生成。
+## 每天次数随机，更新时间随机，更新秒数随机，至少6次，至多12次，大部分为8-10次，符合正态分布。
+function Update_Cron {
+  if [ -f ${ListCron} ]; then
+    RanMin=$((${RANDOM} % 60))
+    RanSleep=$((${RANDOM} % 56))
+    RanHourArray[0]=$((${RANDOM} % 3))
+    for ((i=1; i<14; i++)); do
+      j=$(($i - 1))
+      tmp=$((${RANDOM} % 3 + ${RanHourArray[j]} + 2))
+      [[ ${tmp} -lt 24 ]] && RanHourArray[i]=${tmp} || break
+    done
+    RanHour=${RanHourArray[0]}
+    for ((i=1; i<${#RanHourArray[*]}; i++)); do
+      RanHour="${RanHour},${RanHourArray[i]}"
+    done
+    perl -i -pe "s|.+(bash git_pull.+)|${RanMin} ${RanHour} \* \* \* sleep ${RanSleep} && \1|" ${ListCron}
+    crontab ${ListCron}
+  fi
+}
 
-## 更新shell脚本1
+## 更新shell脚本
 function Git_PullShell {
   echo -e "更新shell脚本，原地址：${ShellURL}\n"
   cd ${ShellDir}
@@ -68,6 +83,24 @@ function Git_PullScripts {
   git fetch --all
   ExitStatusScripts=$?
   git reset --hard origin/master
+  echo
+}
+
+## 克隆scripts2
+function Git_CloneScripts {
+  echo -e "克隆AutoSignMachine脚本，地址：${ShellURL}\n"
+  git clone -b AutoSignMachine ${ShellURL} ${ScriptsDir}
+  ExitStatusScripts=$?
+  echo
+}
+
+## 更新scripts2
+function Git_PullScripts {
+  echo -e "更新AutoSignMachine脚本，地址：${ShellURL}\n"
+  cd ${ScriptsDir}
+  git fetch --all
+  ExitStatusScripts=$?
+  git reset --hard origin/AutoSignMachine
   echo
 }
 
@@ -185,7 +218,7 @@ function Npm_InstallSub {
   fi
 }
 
-## npm install
+## npm install scripts
 function Npm_Install {
   cd ${ScriptsDir}
   if [[ "${PackageListOld}" != "$(cat package.json)" ]]; then
@@ -212,6 +245,37 @@ function Npm_Install {
       echo -e "1...\n"
       sleep 1
       rm -rf ${ScriptsDir}/node_modules
+    fi
+  fi
+}
+
+## npm install scripts2
+function Npm_Install {
+  cd ${ScriptsDir2}
+  if [[ "${PackageListOld}" != "$(cat package.json)" ]]; then
+    echo -e "检测到package.json有变化，运行 npm install...\n"
+    Npm_InstallSub
+    if [ $? -ne 0 ]; then
+      echo -e "\nnpm install 运行不成功，自动删除 ${ScriptsDir2}/node_modules 后再次尝试一遍..."
+      rm -rf ${ScriptsDir2}/node_modules
+    fi
+    echo
+  fi
+
+  if [ ! -d ${ScriptsDir2}/node_modules ]; then
+    echo -e "运行 npm install...\n"
+    Npm_InstallSub
+    if [ $? -ne 0 ]; then
+      echo -e "\nnpm install 运行不成功，自动删除 ${ScriptsDir2}/node_modules...\n"
+      echo -e "请进入 ${ScriptsDir2} 目录后按照wiki教程手动运行 npm install...\n"
+      echo -e "当 npm install 失败时，如果检测到有新任务或失效任务，只会输出日志，不会自动增加或删除定时任务...\n"
+      echo -e "3...\n"
+      sleep 1
+      echo -e "2...\n"
+      sleep 1
+      echo -e "1...\n"
+      sleep 1
+      rm -rf ${ScriptsDir2}/node_modules
     fi
   fi
 }
