@@ -89,7 +89,7 @@ function Git_PullScripts {
 ## 克隆scripts2
 function Git_CloneScripts {
   echo -e "克隆AutoSignMachine脚本，地址：${ShellURL}\n"
-  git clone -b AutoSignMachine ${ShellURL} ${ScriptsDir}
+  git clone -b AutoSignMachine ${ShellURL} ${ScriptsDir2}
   ExitStatusScripts=$?
   echo
 }
@@ -97,7 +97,7 @@ function Git_CloneScripts {
 ## 更新scripts2
 function Git_PullScripts {
   echo -e "更新AutoSignMachine脚本，地址：${ShellURL}\n"
-  cd ${ScriptsDir}
+  cd ${ScriptsDir2}
   git fetch --all
   ExitStatusScripts=$?
   git reset --hard origin/AutoSignMachine
