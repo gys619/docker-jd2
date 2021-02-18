@@ -108,7 +108,7 @@ function Git_PullScripts2 {
 ## 克隆scripts3
 function Git_CloneScripts3 {
   echo -e "克隆BiliExp脚本，地址：${ShellURL}\n"
-  git clone -b BiliExp ${ShellURL} ${ScriptsDir3}
+  git clone -b BiliExp1.1.9 ${ShellURL} ${ScriptsDir3}
   ExitStatusScripts3=$?
   echo
 }
