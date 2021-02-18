@@ -239,7 +239,7 @@ function Npm_InstallSub {
 
 function Pip_InstallSub {
   if [ -f $ScriptsDir3/requirements.txt ]; then
-    pip install -r requirements.txt 
+    pip install -r requirements.txt
   else
     echo -e "\nrequirements.txt文件不存在\n"
   fi
