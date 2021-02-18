@@ -237,11 +237,6 @@ function Npm_InstallSub {
   fi
 }
 
-## pip install 子程序
-function Pip_InstallSub{
-  pip install -r requirements.txt
-}
-
 ## npm install scripts
 function Npm_Install {
   cd ${ScriptsDir}
@@ -301,20 +296,6 @@ function Npm_Install2 {
       sleep 1
       rm -rf ${ScriptsDir2}/node_modules
     fi
-  fi
-}
-
-## pip install scripts3
-function Pip_Install {
-  cd ${ScriptsDir3}
-  if [[ "${PackageListOld3}" != "$(cat requirements.txt)" ]]; then
-    echo -e "检测到requirements.txt有变化，运行 pip install...\n"
-    Pip_InstallSub
-    if [ $? -ne 0 ]; then
-      echo -e "\npip install 运行不成功，再次尝试安装一遍..."
-      Pip_InstallSub
-    fi
-    echo
   fi
 }
 
@@ -436,7 +417,6 @@ if [ ${ExitStatusShell} -eq 0 ]; then
   echo -e "--------------------------------------------------------------\n"
   [ -f ${ScriptsDir}/package.json ] && PackageListOld=$(cat ${ScriptsDir}/package.json)
   [ -f ${ScriptsDir2}/package.json ] && PackageListOld2=$(cat ${ScriptsDir2}/package.json)
-  [ -f ${ScriptsDir3}/requirements.txt ] && PackageListOld3=$(cat ${ScriptsDir3}/requirements.txt)
   [ -d ${ScriptsDir}/.git ] && Git_PullScripts || Git_CloneScripts
   [ -d ${ScriptsDir2}/.git ] && Git_PullScripts2 || Git_CloneScripts2
   [ -d ${ScriptsDir3}/.git ] && Git_PullScripts3 || Git_CloneScripts3
