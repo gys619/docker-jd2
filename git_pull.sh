@@ -106,7 +106,7 @@ function Git_PullScripts2 {
 }
 
 ## 克隆scripts3
-function Git_CloneScripts2 {
+function Git_CloneScripts3 {
   echo -e "克隆BiliExp脚本，地址：${ShellURL}\n"
   git clone -b BiliExp ${ShellURL} ${ScriptsDir3}
   ExitStatusScripts3=$?
@@ -114,7 +114,7 @@ function Git_CloneScripts2 {
 }
 
 ## 更新scripts3
-function Git_PullScripts2 {
+function Git_PullScripts3 {
   echo -e "更新BiliExp脚本，地址：${ShellURL}\n"
   cd ${ScriptsDir3}
   git fetch --all
@@ -446,7 +446,6 @@ then
   Change_ALL
   [ -d ${ScriptsDir2}/node_modules ] && Notify_Version
   Npm_Install
-
 else
   echo -e "AutoSignMachine的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
   Change_ALL
