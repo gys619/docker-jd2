@@ -12,6 +12,7 @@ LogDir=${ShellDir}/log
 [ ! -d ${LogDir} ] && mkdir -p ${LogDir}
 ScriptsDir=${ShellDir}/scripts
 ScriptsDir2=${ShellDir}/scripts2
+ScriptsDir3=${ShellDir}/scripts3
 ConfigDir=${ShellDir}/config
 FileConf=${ConfigDir}/config.sh
 FileDiy=${ConfigDir}/diy.sh
@@ -101,6 +102,24 @@ function Git_PullScripts2 {
   git fetch --all
   ExitStatusScripts2=$?
   git reset --hard origin/AutoSignMachine
+  echo
+}
+
+## 克隆scripts3
+function Git_CloneScripts2 {
+  echo -e "克隆BiliExp脚本，地址：${ShellURL}\n"
+  git clone -b BiliExp ${ShellURL} ${ScriptsDir3}
+  ExitStatusScripts3=$?
+  echo
+}
+
+## 更新scripts3
+function Git_PullScripts2 {
+  echo -e "更新BiliExp脚本，地址：${ShellURL}\n"
+  cd ${ScriptsDir3}
+  git fetch --all
+  ExitStatusScripts3=$?
+  git reset --hard origin/BiliExp
   echo
 }
 
@@ -218,6 +237,11 @@ function Npm_InstallSub {
   fi
 }
 
+## pip install 子程序
+function Pip_InstallSub{
+  pip install -r requirements.txt
+}
+
 ## npm install scripts
 function Npm_Install {
   cd ${ScriptsDir}
@@ -277,6 +301,20 @@ function Npm_Install2 {
       sleep 1
       rm -rf ${ScriptsDir2}/node_modules
     fi
+  fi
+}
+
+## pip install scripts3
+function Pip_Install {
+  cd ${ScriptsDir3}
+  if [[ "${PackageListOld3}" != "$(cat requirements.txt)" ]]; then
+    echo -e "检测到requirements.txt有变化，运行 pip install...\n"
+    Pip_InstallSub
+    if [ $? -ne 0 ]; then
+      echo -e "\npip install 运行不成功，再次尝试安装一遍..."
+      Pip_InstallSub
+    fi
+    echo
   fi
 }
 
@@ -390,16 +428,21 @@ else
   echo -e "\nshell脚本更新失败，请检查原因后再次运行git_pull.sh，或等待定时任务自动再次运行git_pull.sh...\n"
 fi
 
+## 更新crontab
+[[ $(date "+%-H") -le 2 ]] && Update_Cron
+
 ## 克隆或更新js脚本
 if [ ${ExitStatusShell} -eq 0 ]; then
   echo -e "--------------------------------------------------------------\n"
   [ -f ${ScriptsDir}/package.json ] && PackageListOld=$(cat ${ScriptsDir}/package.json)
   [ -f ${ScriptsDir2}/package.json ] && PackageListOld2=$(cat ${ScriptsDir2}/package.json)
+  [ -f ${ScriptsDir3}/requirements.txt ] && PackageListOld3=$(cat ${ScriptsDir3}/requirements.txt)
   [ -d ${ScriptsDir}/.git ] && Git_PullScripts || Git_CloneScripts
   [ -d ${ScriptsDir2}/.git ] && Git_PullScripts2 || Git_CloneScripts2
+  [ -d ${ScriptsDir3}/.git ] && Git_PullScripts3 || Git_CloneScripts3
 fi
 
-## 执行各函数
+## 执行LXK9301各函数
 if [[ ${ExitStatusScripts} -eq 0 ]]
 then
   echo -e "LXK9301的js脚本更新完成...\n"
@@ -416,18 +459,14 @@ else
   Change_ALL
 fi
 
-## 执行各函数
+## 执行AutoSignMachine各函数
 if [[ ${ExitStatusScripts2} -eq 0 ]]
 then
   echo -e "AutoSignMachine的js脚本更新完成...\n"
   Change_ALL
-  [ -d ${ScriptsDir}/node_modules ] && Notify_Version
-  Diff_Cron
+  [ -d ${ScriptsDir2}/node_modules ] && Notify_Version
   Npm_Install
-  Output_ListJsAdd
-  Output_ListJsDrop
-  Del_Cron
-  Add_Cron
+
 else
   echo -e "AutoSignMachine的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
   Change_ALL
