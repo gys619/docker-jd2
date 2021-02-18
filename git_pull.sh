@@ -445,7 +445,7 @@ then
   echo -e "AutoSignMachine的js脚本更新完成...\n"
   Change_ALL
   [ -d ${ScriptsDir2}/node_modules ] && Notify_Version
-  Npm_Install
+  Npm_Install2
 else
   echo -e "AutoSignMachine的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
   Change_ALL
