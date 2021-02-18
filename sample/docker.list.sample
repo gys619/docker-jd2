@@ -11,10 +11,10 @@
 # 33 13 * * * bash jd hangup
 
 #其他脚本，若需要使用请去掉注释（包括52破解，bilibili，爱奇艺，联通）
-#bash at.sh 52pojie
-#bash at.sh iqiyi
-#bash at.sh bilibili
-#bash at.sh unicom
+#10 13 * * * bash jd 52pojie
+#*/30 7-22 * * * bash jd iqiyi
+#*/30 7-22 * * * bash jd bilibili
+#*/30 7-22 * * * bash jd unicom
 
 
 # 运行lxk0301大佬的js脚本，仅列出长期任务作初始化用，AutoAddCron=true时，将自动添加短期任务。

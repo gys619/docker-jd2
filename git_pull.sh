@@ -237,6 +237,14 @@ function Npm_InstallSub {
   fi
 }
 
+function Pip_InstallSub {
+  if [ -f $ScriptsDir3/requirements.txt ]; then
+    pip install -r requirements.txt 
+  else
+    echo -e "\nrequirements.txt文件不存在\n"
+  fi
+}
+
 ## npm install scripts
 function Npm_Install {
   cd ${ScriptsDir}
@@ -296,6 +304,20 @@ function Npm_Install2 {
       sleep 1
       rm -rf ${ScriptsDir2}/node_modules
     fi
+  fi
+}
+
+## pip install scripts3
+function Pip_Install {
+  cd ${ScriptsDir3}
+  if [[ "${PackageListOld3}" != "$(cat requirements.txt)" ]]; then
+    echo -e "检测到requirements.txt有变化，运行 pip install...\n"
+    Pip_InstallSub
+    if [ $? -ne 0 ]; then
+      echo -e "\npip install 运行不成功，再次尝试一遍..."
+      Pip_InstallSub
+    fi
+    echo
   fi
 }
 
@@ -417,6 +439,7 @@ if [ ${ExitStatusShell} -eq 0 ]; then
   echo -e "--------------------------------------------------------------\n"
   [ -f ${ScriptsDir}/package.json ] && PackageListOld=$(cat ${ScriptsDir}/package.json)
   [ -f ${ScriptsDir2}/package.json ] && PackageListOld2=$(cat ${ScriptsDir2}/package.json)
+  [ -f ${ScriptsDir3}/requirements.txt ] && PackageListOld3=$(cat ${ScriptsDir3}/requirements.txt)
   [ -d ${ScriptsDir}/.git ] && Git_PullScripts || Git_CloneScripts
   [ -d ${ScriptsDir2}/.git ] && Git_PullScripts2 || Git_CloneScripts2
   [ -d ${ScriptsDir3}/.git ] && Git_PullScripts3 || Git_CloneScripts3
@@ -443,12 +466,19 @@ fi
 if [[ ${ExitStatusScripts2} -eq 0 ]]
 then
   echo -e "AutoSignMachine的js脚本更新完成...\n"
-  Change_ALL
-  [ -d ${ScriptsDir2}/node_modules ] && Notify_Version
+  [ -d ${ScriptsDir2}/node_modules ]
   Npm_Install2
 else
   echo -e "AutoSignMachine的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
-  Change_ALL
+fi
+
+## 执行BiliExp各函数
+if [[ ${ExitStatusScripts3} -eq 0 ]]
+then
+  echo -e "BiliExp的js脚本更新完成...\n"
+  Pip_Install
+else
+  echo -e "BiliExp的js脚本更新失败，请检查原因或再次运行git_pull.sh...\n"
 fi
 
 ## 调用用户自定义的diy.sh
