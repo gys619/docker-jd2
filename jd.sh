@@ -10,6 +10,7 @@ FileConfSample=${ShellDir}/sample/config.sh.sample
 LogDir=${ShellDir}/log
 ListScripts=($(cd ${ScriptsDir}; ls *.js | grep -E "j[drx]_"))
 ListCron=${ConfigDir}/crontab.list
+Dir=${ScriptsDir2}/index.js
 
 ## 导入config.sh
 function Import_Conf {
@@ -216,6 +217,19 @@ function Run_Normal {
   fi
 }
 
+#运行AutoSignMachine.js脚本
+function Run_Normal2 {
+  if [ -f ${ConfigDir}/$1.json ]; then
+    LogTime=$(date "+%Y-%m-%d-%H-%M-%S")
+    LogFile="${LogDir}/$1/${LogTime}.log"
+    [ ! -d ${LogDir}/$1 ] && mkdir -p ${LogDir}/$1
+    cd ${ScriptsDir2}
+    node ${Dir} $1 --config ${ConfigDir}/$1.json | tee ${LogFile}
+    else 
+      echo -e "\n配置文件不存在\n"
+  fi
+}
+
 ## 命令检测
 case $# in
   0)
@@ -227,6 +241,14 @@ case $# in
       Run_HangUp
     elif [[ $1 == resetpwd ]]; then
       Reset_Pwd
+    elif [[ $1 == 52pojie ]]; then
+      Run_Normal2 $1
+    elif [[ $1 == bilibili ]]; then
+      Run_Normal2 $1
+    elif [[ $1 == iqiyi ]]; then
+      Run_Normal2 $1
+    elif [[ $1 == unicom ]]; then
+      Run_Normal2 $1
     else
       Run_Normal $1
     fi
