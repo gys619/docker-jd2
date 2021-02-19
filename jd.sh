@@ -233,17 +233,17 @@ function Run_Normal2 {
 }
 
 #运行BiliExp.py脚本
-function Run_Normal3 {
-  if [ -f ${ConfigDir}/$1.json ]; then
-    LogTime=$(date "+%Y-%m-%d-%H-%M-%S")
-    LogFile="${LogDir}/$1/${LogTime}.log"
-    [ ! -d ${LogDir}/$1 ] && mkdir -p ${LogDir}/$1
-    cd ${ScriptsDir3}
-    python3 $1.py -c ${ConfigDir}/$1.json | tee ${LogFile}
-    else 
-      echo -e "\n配置文件不存在\n"
-  fi
-}
+#function Run_Normal3 {
+#  if [ -f ${ConfigDir}/$1.json ]; then
+#    LogTime=$(date "+%Y-%m-%d-%H-%M-%S")
+#    LogFile="${LogDir}/$1/${LogTime}.log"
+#    [ ! -d ${LogDir}/$1 ] && mkdir -p ${LogDir}/$1
+#    cd ${ScriptsDir3}
+#    python3 $1.py -c ${ConfigDir}/$1.json | tee ${LogFile}
+#    else 
+#      echo -e "\n配置文件不存在\n"
+#  fi
+#}
 
 ## 命令检测
 case $# in
@@ -264,8 +264,8 @@ case $# in
       Run_Normal2 $1
     elif [[ $1 == unicom ]]; then
       Run_Normal2 $1
-    elif [[ $1 == BiliExp ]]; then
-      Run_Normal3 $1
+    #elif [[ $1 == BiliExp ]]; then
+    #  Run_Normal3 $1
     else
       Run_Normal $1
     fi
