@@ -29,7 +29,7 @@ ContentDropTask=${ShellDir}/drop_task
 SendCount=${ShellDir}/send_count
 isTermux=${ANDROID_RUNTIME_ROOT}${ANDROID_ROOT}
 ShellURL=https://github.com/kangwenhang/jd_docker2
-ScriptsURL=https://gitee.com/lxk0301/jd_scripts
+ScriptsURL=git@gitee.com:lxk0301/jd_scripts.git
 
 ## 更新crontab，gitee服务器同一时间限制5个链接，因此每个人更新代码必须错开时间，每次执行git_pull随机生成。
 ## 每天次数随机，更新时间随机，更新秒数随机，至少6次，至多12次，大部分为8-10次，符合正态分布。
@@ -37,16 +37,17 @@ function Update_Cron {
   if [ -f ${ListCron} ]; then
     RanMin=$((${RANDOM} % 60))
     RanSleep=$((${RANDOM} % 56))
-    RanHourArray[0]=$((${RANDOM} % 3))
-    for ((i=1; i<14; i++)); do
-      j=$(($i - 1))
-      tmp=$((${RANDOM} % 3 + ${RanHourArray[j]} + 2))
-      [[ ${tmp} -lt 24 ]] && RanHourArray[i]=${tmp} || break
-    done
-    RanHour=${RanHourArray[0]}
-    for ((i=1; i<${#RanHourArray[*]}; i++)); do
-      RanHour="${RanHour},${RanHourArray[i]}"
-    done
+    RanHour=$((${RANDOM} % 60))
+    #RanHourArray[0]=$((${RANDOM} % 3))
+    #for ((i=1; i<14; i++)); do
+    #  j=$(($i - 1))
+    #  tmp=$((${RANDOM} % 3 + ${RanHourArray[j]} + 2))
+    #  [[ ${tmp} -lt 24 ]] && RanHourArray[i]=${tmp} || break
+    #done
+    #RanHour=${RanHourArray[0]}
+    #for ((i=1; i<${#RanHourArray[*]}; i++)); do
+    #  RanHour="${RanHour},${RanHourArray[i]}"
+    #done
     perl -i -pe "s|.+(bash git_pull.+)|${RanMin} ${RanHour} \* \* \* sleep ${RanSleep} && \1|" ${ListCron}
     crontab ${ListCron}
   fi
