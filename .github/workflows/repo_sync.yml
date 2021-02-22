@@ -26,7 +26,7 @@ jobs:
         uses: Yikun/hub-mirror-action@master
         if: env.dst_key
         with:
-          src: github/LXK9301
+          src: github/kangwenhang
           dst: gitee/kangwenhang
           static_list: "docker_2"
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
