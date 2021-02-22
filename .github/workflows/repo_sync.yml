@@ -28,6 +28,6 @@ jobs:
         with:
           src: github/kangwenhang
           dst: gitee/kangwenhang
-          static_list: "docker_2"
+          static_list: "jd_docker2"
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
