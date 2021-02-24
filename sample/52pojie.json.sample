@@ -1,8 +1,0 @@
-{
-    "//":'accountSn表示账户序号，例如1,2, 则将提取option-sn选项的值，例如user-1,user-2,这里只示例两个，需要请自行添加，https://github.com/kangwenhang/jd_docker2/tree/AutoSignMachine'
-    "accountSn": "1,2",
-    "htVD_2132_auth-1": "22******1",
-    "htVD_2132_saltkey-1": "31******1",
-    "htVD_2132_auth-2": "72******1",
-    "htVD_2132_saltkey-2": "92******1"
-}
